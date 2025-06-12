@@ -1,0 +1,173 @@
+.hero-section {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  color: white;
+}
+
+.hero-bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: -1;
+}
+
+.hero-content {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 130px 1rem 0 1rem;
+}
+
+.text-area {
+  text-align: left;
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+
+.text-area h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.text-area h1 span {
+  color: #d3b55f;
+  display: block;
+}
+
+.text-area p {
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  color: #f0f0f0;
+}
+/* Updated padding for responsiveness */
+.hero-content {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 180px 1rem 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    padding-top: 120px;
+  }
+}
+
+/* Make search form appear lower on large screens */
+.search-container {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 1300px;
+}
+
+.search-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background-color: #f3f3f3;
+  padding: 0.75rem 1rem;
+  border-radius: 5px;
+  min-width: 200px;
+  transition: all 0.3s ease;
+}
+
+.form-box:hover {
+  box-shadow: 0 0 0 2px #d3b55f;
+}
+
+.form-box input {
+  border: none;
+  background: transparent;
+  color: #333;
+  width: 100%;
+  font-size: 0.9rem;
+  outline: none;
+  margin-left: 0.5rem;
+}
+
+.form-box input:focus {
+  background-color: #eaeaea;
+}
+
+.form-box input::placeholder {
+  color: #999;
+}
+
+.form-icon {
+  font-size: 1rem;
+  color: #666;
+}
+
+.search-btn {
+  background-color: #d3b55f;
+  color: #000;
+  border: none;
+  padding: 0.9rem 2.5rem;
+  font-weight: 600;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.search-btn:hover {
+  background-color: #bfa14d;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .hero-section {
+    height: auto;
+    padding-bottom: 2rem;
+  }
+
+  .hero-content {
+    padding-top: 2rem;
+  }
+
+  .text-area h1 {
+    font-size: 2.2rem;
+  }
+
+  .search-container {
+    position: static;
+    transform: none;
+    margin-top: 2rem;
+    padding: 0 1rem;
+  }
+
+  .search-box {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+  }
+
+  .form-box,
+  .search-btn {
+    width: 100%;
+  }
+}

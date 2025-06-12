@@ -1,0 +1,23 @@
+/* WhyChoose.css */
+.why-choose {
+    background: linear-gradient(135deg, #111, #222);
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+  }
+  
+  .why-choose h2 {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+    font-weight: 600;
+  }
+  
+  .why-choose .col-md-4 {
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+  
+  .why-choose .col-md-4:hover {
+    transform: translateY(-10px);
+    color: #0d6efd;
+  }
+  
