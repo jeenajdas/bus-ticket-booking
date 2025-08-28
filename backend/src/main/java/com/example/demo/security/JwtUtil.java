@@ -16,6 +16,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
@@ -82,4 +83,22 @@ public class JwtUtil {
     private boolean isTokenExpired(String token) {
         return getClaims(token).getExpiration().before(new Date());
     }
+
+
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
 }

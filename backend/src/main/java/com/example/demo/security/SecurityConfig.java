@@ -8,8 +8,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -26,16 +26,22 @@ public class SecurityConfig {
             .cors().and()
             .csrf().disable()
             .authorizeHttpRequests(auth -> auth
-            		.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight requests
-            	    .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-            	    .requestMatchers(HttpMethod.POST, "/api/bookings/**").authenticated()
-            	    .requestMatchers(HttpMethod.POST, "/api/admin/**").hasAuthority("ROLE_ADMIN")
-            	    .requestMatchers(HttpMethod.PUT, "/api/admin/**").hasAuthority("ROLE_ADMIN")
-            	    .requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasAuthority("ROLE_ADMIN")
-            	    .requestMatchers("/user/**").permitAll()
-            	    .requestMatchers("/routes/**").permitAll()
-            	    .requestMatchers("/api/bus-routes/search").permitAll()
-            	    .anyRequest().authenticated()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                // Public endpoints
+                .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                .requestMatchers("/routes/**").permitAll()
+                .requestMatchers("/api/bus-routes/**").permitAll()
+                .requestMatchers("/user/**").permitAll()
+
+                // Bookings endpoints for authenticated users
+                .requestMatchers(HttpMethod.POST, "/api/bookings/**").authenticated()
+                
+                // Admin-only endpoints (all methods: GET, POST, PUT, DELETE)
+                .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+
+                // Any other requests must be authenticated
+                .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

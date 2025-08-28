@@ -1,4 +1,3 @@
-// ✅ Updated BusRouteService.java
 
 package com.example.demo.service;
 
@@ -25,6 +24,13 @@ public class BusRouteService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+    public List<BusRouteDTO> getAllRoutes() {
+        List<BusRoute> routes = busRouteRepository.findAll();
+        return routes.stream()
+                     .map(BusRouteDTO::new)
+                     .toList();
+    }
+
 
     public Map<LocalDate, List<BusRouteDTO>> searchGroupedRoutes(String startLocation, String endLocation, LocalDateTime departureTime) {
         if (departureTime.toLocalDate().isBefore(LocalDate.now())) {
@@ -65,6 +71,7 @@ public class BusRouteService {
                 busRoute.getBusType(),
                 busRoute.getSeatType(),
                 busRoute.getBusName(),
+                busRoute.isActive(),
                 busRoute.getBoardingPoints(),
                 busRoute.getDroppingPoints()
         );

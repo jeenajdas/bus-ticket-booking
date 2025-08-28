@@ -29,6 +29,9 @@ public class Booking {
     @CollectionTable(name = "booking_seat_numbers", joinColumns = @JoinColumn(name = "booking_id"))
     @Column(name = "seat_number")
     private List<String> seatNumbers;
+    @ElementCollection
+    @CollectionTable(name = "booking_passengers", joinColumns = @JoinColumn(name = "booking_id"))
+    private List<PassengerInfo> passengers;
 
     public Booking() {
         this.bookingTime = LocalDateTime.now();
@@ -99,5 +102,12 @@ public class Booking {
 
     public void setSeatNumbers(List<String> seatNumbers) {
         this.seatNumbers = seatNumbers;
+    }
+    public List<PassengerInfo> getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(List<PassengerInfo> passengers) {
+        this.passengers = passengers;
     }
 }

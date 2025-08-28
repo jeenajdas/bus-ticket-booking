@@ -22,13 +22,19 @@ public class BusRouteController {
     @Autowired
     private BusRouteRepository busRouteRepository;
 
-    // ✅ Get all active bus routes
+    //  Get all active bus routes
     @GetMapping("/active")
     public List<BusRouteDTO> getActiveBusRoutes() {
         return busRouteService.getAllActiveRoutes();
     }
+    
+ //  Get all bus routes (for Manage Buses)
+    @GetMapping("/all")
+    public List<BusRouteDTO> getAllBusRoutes() {
+        return busRouteService.getAllRoutes();
+    }
 
-    // ✅ New grouped search: selected date + next 2 days
+    //  New grouped search: selected date + next 2 days
     @GetMapping("/search")
     public ResponseEntity<Map<LocalDate, List<BusRouteDTO>>> searchGroupedRoutes(
             @RequestParam String startLocation,

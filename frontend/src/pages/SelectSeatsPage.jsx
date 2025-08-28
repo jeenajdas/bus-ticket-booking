@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from '../services/axiosInstance';
 import { useSelector } from "react-redux";
 import "../components/Tickets/SelectSeatsPage.css";
 import { FaWheelchair } from "react-icons/fa";
+
+function formatTime(dateTimeStr) {
+  if (!dateTimeStr) return "N/A";
+  const date = new Date(dateTimeStr);
+  return isNaN(date.getTime())
+    ? "Invalid Date"
+    : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true });
+}
 
 const seats = [
   ["B1", "B3", "B5", "B7", "B9", "B11", "B13", "B15", "B17", "B19"],
@@ -14,29 +22,33 @@ const seats = [
 
 const SelectSeatsPage = () => {
   const { busId } = useParams();
-  const navigate = useNavigate();
-  const isLoggedIn = useSelector((state) => !!state.auth.token);
-
+  const [busDetails, setBusDetails] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [bookedSeats, setBookedSeats] = useState([]);
+  const [selectedBoarding, setSelectedBoarding] = useState("");
+  const [selectedDropping, setSelectedDropping] = useState("");
   const [showLimitPopup, setShowLimitPopup] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
-  // ✅ Restore pending booking (if redirected after login)
+  const isLoggedIn = useSelector((state) => !!state.auth.token);
+  const navigate = useNavigate();
+
+  // ✅ Restore pending booking after login
   useEffect(() => {
     const pending = JSON.parse(localStorage.getItem("pendingBooking"));
     if (pending?.busId === busId) {
       setSelectedSeats(pending.selectedSeats || []);
-      localStorage.removeItem("pendingBooking"); // clear it after restoring
+      setSelectedBoarding(pending.boardingPoint || "");
+      setSelectedDropping(pending.droppingPoint || "");
+      localStorage.removeItem("pendingBooking");
     }
   }, [busId]);
 
-  // ✅ Fetch booked seats from backend
   useEffect(() => {
     const fetchBookedSeats = async () => {
       try {
-        const today = new Date().toISOString().split('T')[0];
-        const response = await axios.get(`/api/bookings/booked-seats`, {
+        const today = new Date().toISOString().split("T")[0];
+        const response = await axios.get(`/bookings/booked-seats`, {
           params: { busId, date: today },
         });
         setBookedSeats(response.data);
@@ -45,6 +57,18 @@ const SelectSeatsPage = () => {
       }
     };
     fetchBookedSeats();
+  }, [busId]);
+
+  useEffect(() => {
+    const fetchBusDetails = async () => {
+      try {
+        const response = await axios.get(`/bus-routes/${busId}`);
+        setBusDetails(response.data);
+      } catch (error) {
+        console.error("Failed to fetch bus details", error);
+      }
+    };
+    fetchBusDetails();
   }, [busId]);
 
   const isBooked = (seat) => bookedSeats.includes(seat);
@@ -63,17 +87,15 @@ const SelectSeatsPage = () => {
 
   return (
     <div className="select-page-container">
-      {/* Hero Banner */}
+      {/* Hero */}
       <div className="select-hero">
         <div className="select-hero-content">Bus Details</div>
       </div>
 
-      <div>Seat Selection for Bus ID: {busId}</div>
       <div className="select-curve-divider"></div>
 
-      {/* Main Content Layout */}
       <div className="select-seats-wrapper">
-        {/* Seat Layout Section */}
+        {/* Seat Layout */}
         <div className="select-seat-layout">
           <div className="d-flex align-items-center mb-3">
             <FaWheelchair className="me-2 text-danger" />
@@ -129,14 +151,51 @@ const SelectSeatsPage = () => {
         <div className="select-info-panel">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h5>Your Destination</h5>
-            <a href="#" className="text-danger">Change route</a>
+            <span className="text-danger" style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
+              Change route
+            </span>
           </div>
 
-          <div className="select-price-details">
-            <p><strong>From:</strong> Kathmandu (06:15 pm)</p>
-            <p><strong>To:</strong> Pyuthan (08:45 am)</p>
-          </div>
+          {busDetails ? (
+            <>
+              <p><strong>From:</strong> {busDetails.startLocation} ({formatTime(busDetails.startDateTime)})</p>
+              <p><strong>To:</strong> {busDetails.endLocation} ({formatTime(busDetails.endDateTime)})</p>
 
+              {/* Boarding Point */}
+              <div className="mb-3">
+                <label><strong>Select Boarding Point</strong></label>
+                <select
+                  className="form-select mt-1"
+                  value={selectedBoarding}
+                  onChange={(e) => setSelectedBoarding(e.target.value)}
+                >
+                  <option value="">-- Select Boarding Point --</option>
+                  {busDetails.boardingPoints.map((point, index) => (
+                    <option key={index} value={point}>{point}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Dropping Point */}
+              <div className="mb-3">
+                <label><strong>Select Dropping Point</strong></label>
+                <select
+                  className="form-select mt-1"
+                  value={selectedDropping}
+                  onChange={(e) => setSelectedDropping(e.target.value)}
+                >
+                  <option value="">-- Select Dropping Point --</option>
+                  {busDetails.droppingPoints.map((point, index) => (
+                    <option key={index} value={point}>{point}</option>
+                  ))}
+                </select>
+              </div>
+            </>
+          ) : (
+            <p>Loading route details...</p>
+          )}
+
+          {/* Selected Seats */}
           <div className="my-3">
             <strong>Selected Seats:</strong>
             <div className="mt-2">
@@ -151,28 +210,48 @@ const SelectSeatsPage = () => {
           </div>
 
           <div className="select-price-details">
-            <p><strong>Basic Fare:</strong> NPR. 1600</p>
-            <p><strong>Total Price:</strong> NPR {selectedSeats.length * 1600}</p>
+            <p><strong>Basic Fare:</strong> NPR. {busDetails?.fare || "..."}</p>
+            <p><strong>Total Price:</strong> NPR {busDetails?.fare ? selectedSeats.length * busDetails.fare : 0}</p>
           </div>
 
+          {/* Proceed to Checkout */}
           <button
             className="select-checkout-btn w-100"
             onClick={() => {
+              if (!selectedBoarding || !selectedDropping) {
+                alert("Please select both boarding and dropping points.");
+                return;
+              }
+
               if (!isLoggedIn) {
-                // ✅ Save pending booking to localStorage
+                if (!busDetails) return;
                 localStorage.setItem("pendingBooking", JSON.stringify({
                   busId,
                   selectedSeats,
-                  fare: 1600, // or dynamically from props/state
-                  from: "Kathmandu",
-                  to: "Pyuthan",
+                  fare: busDetails.fare,
+                  from: busDetails.startLocation,
+                  to: busDetails.endLocation,
+                  boardingPoint: selectedBoarding,
+                  droppingPoint: selectedDropping,
                   date: new Date().toISOString().split('T')[0],
                 }));
                 setShowLoginPopup(true);
               } else {
-                // ✅ Proceed to booking/checkout logic
-                console.log("Booking seats:", selectedSeats);
-                // navigate("/checkout") or API call
+                console.log("✅ Booking seats:", selectedSeats);
+                console.log("🚌 Boarding:", selectedBoarding);
+                console.log("🛬 Dropping:", selectedDropping);
+                // navigate("/checkout") or make booking API call
+                navigate("/checkout", {
+  state: {
+    busId,
+    selectedSeats,
+    busDetails,
+    boardingPoint: selectedBoarding,
+    droppingPoint: selectedDropping,
+    date: new Date().toISOString().split('T')[0],
+  },
+});
+
               }
             }}
           >

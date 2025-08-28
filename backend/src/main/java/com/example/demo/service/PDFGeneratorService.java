@@ -1,110 +1,142 @@
-package com.example.demo.service;
-
-import com.example.demo.model.Booking;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.itextpdf.io.image.ImageData;
-import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.property.TextAlignment;
-import org.springframework.stereotype.Service;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import javax.imageio.ImageIO;
-
-@Service // Marks this class as a Spring service component
-public class PDFGeneratorService {
-
-    /**
-     * Generates a bus ticket PDF containing booking details and a QR code.
-     * 
-     * @param booking The booking information to be included in the PDF.
-     * @return A byte array representing the generated PDF document.
-     */
-    public byte[] generateTicketPDF(Booking booking) {
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            // Create a new PDF writer using an output stream
-            PdfWriter writer = new PdfWriter(byteArrayOutputStream);
-            PdfDocument pdfDocument = new PdfDocument(writer);
-            Document document = new Document(pdfDocument);
-
-            // Add ticket title to the PDF
-            document.add(new Paragraph("Bus Ticket Confirmation")
-                    .setBold().setFontSize(18).setTextAlignment(TextAlignment.CENTER));
-
-            // Add booking details to the PDF
-            document.add(new Paragraph("Booking ID: " + booking.getId()));
-            document.add(new Paragraph("User: " + booking.getUser().getName()));
-            document.add(new Paragraph("Bus Route: " + booking.getBusRoute().getBusName()));
-            document.add(new Paragraph("Seats: " + booking.getNumberOfSeats()));
-            document.add(new Paragraph("Total Fare: $" + booking.getTotalFare()));
-            document.add(new Paragraph("Booking Time: " + booking.getBookingTime()));
-
-            // Generate QR Code containing booking details
-            byte[] qrCodeImage = generateQRCodeImage("Booking ID: " + booking.getId() + 
-                    ", Bus: " + booking.getBusRoute().getBusName());
-            
-            if (qrCodeImage != null) {
-                // Convert QR code byte array into an iText image and add it to the PDF
-                ImageData qrImageData = ImageDataFactory.create(qrCodeImage);
-                Image qrImage = new Image(qrImageData);
-                qrImage.setWidth(150).setHeight(150).setTextAlignment(TextAlignment.CENTER);
-                document.add(qrImage);
-            }
-
-            // Close the document and return the generated PDF as a byte array
-            document.close();
-            return byteArrayOutputStream.toByteArray();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null; // Return null if an error occurs
-        }
-    }
-
-    /**
-     * Generates a QR code image from the provided text.
-     * 
-     * @param text The text to encode in the QR code.
-     * @return A byte array containing the QR code image in PNG format.
-     */
-    private byte[] generateQRCodeImage(String text) {
-        try {
-            // Create a QR code writer
-            QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 150, 150);
-
-            // Create a blank image for the QR code
-            BufferedImage image = new BufferedImage(150, 150, BufferedImage.TYPE_INT_RGB);
-            Graphics2D graphics = image.createGraphics();
-            graphics.setColor(Color.WHITE);
-            graphics.fillRect(0, 0, 150, 150);
-            graphics.setColor(Color.BLACK);
-
-            // Draw the QR code onto the image
-            for (int x = 0; x < 150; x++) {
-                for (int y = 0; y < 150; y++) {
-                    if (bitMatrix.get(x, y)) {
-                        graphics.fillRect(x, y, 1, 1);
-                    }
-                }
-            }
-            graphics.dispose(); // Clean up graphics resources
-
-            // Convert the image into a byte array in PNG format
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", outputStream);
-            return outputStream.toByteArray();
-        } catch (WriterException | java.io.IOException e) {
-            e.printStackTrace();
-            return null; // Return null if QR code generation fails
-        }
-    }
-}
+//// PDFGeneratorService.java
+//package com.example.demo.service;
+//
+//import com.example.demo.model.Booking;
+//
+//import com.google.zxing.BarcodeFormat;
+//import com.google.zxing.WriterException;
+//import com.google.zxing.common.BitMatrix;
+//import com.google.zxing.qrcode.QRCodeWriter;
+//import com.itextpdf.io.image.ImageDataFactory;
+//import com.itextpdf.kernel.pdf.PdfDocument;
+//import com.itextpdf.kernel.pdf.PdfWriter;
+//import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
+//import com.itextpdf.layout.Document;
+//import com.itextpdf.layout.element.*;
+//import com.itextpdf.layout.property.HorizontalAlignment;
+//import com.itextpdf.layout.property.TextAlignment;
+//import com.itextpdf.layout.property.UnitValue;
+//
+//import jakarta.annotation.PostConstruct;
+//
+//import org.springframework.stereotype.Service;
+//
+//import javax.imageio.ImageIO;
+//import java.awt.image.BufferedImage;
+//import java.io.ByteArrayOutputStream;
+//import java.time.format.DateTimeFormatter;
+//
+//
+//
+//@Service
+//public class PDFGeneratorService {
+//
+//	@PostConstruct
+//	public void testITextLoading() {
+//	    System.out.println("✅ PDFGeneratorService loaded. Testing iText...");
+//	    try {
+//	        Document dummy = new Document(new PdfDocument(new PdfWriter(new ByteArrayOutputStream())));
+//	        System.out.println("✅ iText dependencies working fine!");
+//	    } catch (Exception e) {
+//	        System.err.println("❌ iText dependency issue: " + e.getMessage());
+//	    }
+//	}
+//    public byte[] generateTicketPDF(Booking booking) {
+//    	System.out.println("✅ iText dependencies loaded successfully!");
+//        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+//            PdfWriter writer = new PdfWriter(baos);
+//            PdfDocument pdf = new PdfDocument(writer);
+//            Document document = new Document(pdf);
+//
+//            // Add Title
+//            document.add(new Paragraph("EasyTrip Bus Ticket")
+//                    .setFontSize(22)
+//                    .setBold()
+//                    .setTextAlignment(TextAlignment.CENTER));
+//            document.add(new LineSeparator(new SolidLine()));
+//
+//            // Booking Info Table
+//            Table table = new Table(UnitValue.createPercentArray(new float[]{35, 65}))
+//                    .setWidth(UnitValue.createPercentValue(100))
+//                    .setMarginTop(10);
+//
+//            table.addCell(cell("Passenger Name:", true));
+//            table.addCell(cell(booking.getUser().getName(), false));
+//
+//            table.addCell(cell("Bus Name:", true));
+//            table.addCell(cell(booking.getBusRoute().getBusName(), false));
+//
+//            table.addCell(cell("Route:", true));
+//            table.addCell(cell(booking.getBusRoute().getStartLocation() + " ➔ " + booking.getBusRoute().getEndLocation(), false));
+//
+//            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a");
+//            table.addCell(cell("Date & Time:", true));
+//            table.addCell(cell(dtf.format(booking.getBusRoute().getStartDateTime()), false));
+//
+//            table.addCell(cell("Seats:", true));
+//            table.addCell(cell(String.join(", ", booking.getSeatNumbers()), false));
+//
+//            table.addCell(cell("Fare:", true));
+//            table.addCell(cell("INR ₹" + booking.getTotalFare(), false));
+//
+//            table.addCell(cell("Booking ID:", true));
+//            table.addCell(cell(booking.getId().toString(), false));
+//
+//            document.add(table);
+//
+//            // QR Code
+//            byte[] qrImage = generateQRCode("BookingID:" + booking.getId() +
+//                    ", User:" + booking.getUser().getName() +
+//                    ", Bus:" + booking.getBusRoute().getBusName() +
+//                    ", Seats:" + String.join(",", booking.getSeatNumbers()));
+//
+//            if (qrImage != null) {
+//                Image qr = new Image(ImageDataFactory.create(qrImage))
+//                        .setWidth(120)
+//                        .setHeight(120)
+//                        .setHorizontalAlignment(HorizontalAlignment.CENTER);
+//                document.add(new Paragraph("\nScan for Details").setTextAlignment(TextAlignment.CENTER).setFontSize(10));
+//                document.add(qr);
+//            }
+//
+//            // Footer
+//            document.add(new Paragraph("\nThank you for choosing EasyTrip!")
+//                    .setTextAlignment(TextAlignment.CENTER).setFontSize(12));
+//            document.add(new Paragraph("Contact: support@easytrip.com")
+//                    .setTextAlignment(TextAlignment.CENTER).setFontSize(10));
+//
+//            document.close();
+//            return baos.toByteArray();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+//
+//    private byte[] generateQRCode(String data) {
+//        try {
+//            QRCodeWriter qrWriter = new QRCodeWriter();
+//            BitMatrix matrix = qrWriter.encode(data, BarcodeFormat.QR_CODE, 150, 150);
+//            BufferedImage image = new BufferedImage(150, 150, BufferedImage.TYPE_INT_RGB);
+//
+//            for (int x = 0; x < 150; x++) {
+//                for (int y = 0; y < 150; y++) {
+//                    image.setRGB(x, y, matrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF);
+//                }
+//            }
+//
+//            ByteArrayOutputStream out = new ByteArrayOutputStream();
+//            ImageIO.write(image, "png", out);
+//            return out.toByteArray();
+//        } catch (WriterException | java.io.IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+//
+//    private Cell cell(String text, boolean bold) {
+//        Paragraph p = new Paragraph(text);
+//        if (bold) p.setBold();
+//        return new Cell().add(p);
+//    }
+//}

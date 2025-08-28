@@ -1,11 +1,14 @@
+// src/features/reports/reportAPI.js
 import axiosInstance from '../../services/axiosInstance';
 
-export const getTotalCollectionByDate = async () => {
-  const res = await axiosInstance.get('/admin/reports/total-collection');
-  return res.data;
+// Get total revenue (all buses, all time)
+export const getTotalCollection = async () => {
+  const res = await axiosInstance.get('/admin/report/total-collection');
+  return res.data; // returns a number
 };
 
-export const getCollectionByBus = async () => {
-  const res = await axiosInstance.get('/admin/reports/collection-by-bus');
-  return res.data;
+// Get revenue for a specific bus
+export const getCollectionByBus = async (busId) => {
+  const res = await axiosInstance.get(`/admin/report/collection/${busId}`);
+  return res.data; // returns a number
 };

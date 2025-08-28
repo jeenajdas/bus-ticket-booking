@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { signIn, signUp } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Auth.css'; // Optional: Create your own modern styles here
+import '../styles/Auth.css';
 
 const Auth = () => {
   const dispatch = useDispatch();

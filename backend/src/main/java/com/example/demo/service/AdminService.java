@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.model.BusRoute;
+import com.example.demo.repository.BookingRepository;
 import com.example.demo.repository.BusRouteRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -10,9 +11,11 @@ import java.util.Optional;
 public class AdminService {
 
     private final BusRouteRepository busRouteRepository;
+    private final BookingRepository bookingRepository; 
 
-    public AdminService(BusRouteRepository busRouteRepository) {
+    public AdminService(BusRouteRepository busRouteRepository, BookingRepository bookingRepository) {
         this.busRouteRepository = busRouteRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     // Add a new bus route
@@ -54,6 +57,21 @@ public class AdminService {
             return busRouteRepository.save(route);
         });
     }
+    
+    public Optional<BusRoute> toggleBusRouteStatus(Long id) {
+        return busRouteRepository.findById(id).map(route -> {
+            route.setActive(!route.isActive());
+            return busRouteRepository.save(route);
+        });
+    }
+    public long getTotalBuses() {
+        return busRouteRepository.count();
+    }
+
+    public long getTotalBookings() {
+        return bookingRepository.count();
+    }
+
 
     // Get total collection from all buses
     public double getTotalCollection() {

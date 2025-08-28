@@ -1,14 +1,32 @@
+// src/features/reports/reportSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getTotalCollectionByDate, getCollectionByBus } from './reportAPI';
+import { getTotalCollection, getCollectionByBus } from './reportAPI';
 
-export const fetchTotalCollection = createAsyncThunk('reports/total', getTotalCollectionByDate);
-export const fetchBusCollections = createAsyncThunk('reports/bus', getCollectionByBus);
+// Fetch total collection (all buses)
+export const fetchTotalCollection = createAsyncThunk(
+  'reports/total',
+  async () => {
+    const data = await getTotalCollection();
+    return data; // plain number
+  }
+);
+
+// Fetch collection by bus (pass busId)
+export const fetchBusCollections = createAsyncThunk(
+  'reports/bus',
+  async (busId) => {
+    const data = await getCollectionByBus(busId);
+    return { busId, totalAmount: data }; // return object for each bus
+  }
+);
 
 const reportSlice = createSlice({
   name: 'reports',
   initialState: {
-    totalCollection: [],
-    busCollections: [],
+    totalCollection: 0,     // number, not array
+    busCollections: [],     // array of { busId, totalAmount }
+    status: 'idle',
+    error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -17,7 +35,15 @@ const reportSlice = createSlice({
         state.totalCollection = action.payload;
       })
       .addCase(fetchBusCollections.fulfilled, (state, action) => {
-        state.busCollections = action.payload;
+        // if bus already exists, update it, else push new
+        const existingIndex = state.busCollections.findIndex(
+          (b) => b.busId === action.payload.busId
+        );
+        if (existingIndex !== -1) {
+          state.busCollections[existingIndex] = action.payload;
+        } else {
+          state.busCollections.push(action.payload);
+        }
       });
   },
 });

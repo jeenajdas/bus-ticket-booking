@@ -102,11 +102,7 @@
 </dependency>
 
 <!--for pdf generation-->
-<dependency>
-    <groupId>com.itextpdf</groupId>
-    <artifactId>itextpdf</artifactId>
-    <version>5.5.13.3</version>
-</dependency>
+
 
 <!-- QR Code Generator -->
         <dependency>
@@ -120,25 +116,9 @@
     <version>3.5.1</version>
 </dependency>
 <!-- iText Kernel (core library) -->
-<dependency>
-    <groupId>com.itextpdf</groupId>
-    <artifactId>kernel</artifactId>
-    <version>7.0.4</version>
-</dependency>
+<!-- iText PDF Kernel -->
 
-<!-- iText Layout (for layout elements like Document, Paragraph) -->
-<dependency>
-    <groupId>com.itextpdf</groupId>
-    <artifactId>layout</artifactId>
-    <version>7.0.4</version>
-</dependency>
 
-<!-- iText Barcodes (for QR code generation) -->
-<dependency>
-    <groupId>com.itextpdf</groupId>
-    <artifactId>barcodes</artifactId>
-    <version>7.0.4</version>
-</dependency>
 
 
 
@@ -150,11 +130,7 @@
             <scope>runtime</scope>
         </dependency>
         
-        <dependency>
-    	<groupId>com.example</groupId>
-    	<artifactId>Api</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-    </dependency>
+        
 
 	</dependencies>
 

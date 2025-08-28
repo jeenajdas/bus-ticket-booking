@@ -1,0 +1,126 @@
+/* ===== Layout ===== */
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f9f9f9;
+  transition: margin-left 0.3s ease;
+}
+
+.admin-main.sidebar-open {
+  margin-left: 220px;
+}
+
+.admin-content {
+  padding: 20px;
+  overflow-y: auto;
+  height: calc(100vh - 60px);
+}
+
+/* Sidebar base */
+.sidebar {
+  width: 220px;
+  background: #1e293b;
+  color: white;
+  transition: all 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 100;
+  overflow-x: hidden;
+}
+
+/* Collapsed (desktop only) */
+.sidebar.collapsed {
+  width: 60px;
+}
+
+.sidebar .link-text {
+  display: inline;
+}
+.sidebar.collapsed .link-text {
+  display: none;
+}
+
+/* Sidebar header */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  font-size: 18px;
+  background: #111827;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-link {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.sidebar-link:hover {
+  background: #334155;
+  color: white;
+}
+
+.sidebar-link.active {
+  background: #2563eb;
+  color: white;
+}
+
+/* Topbar */
+.topbar {
+  height: 60px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  margin-right: auto;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+  .sidebar {
+    left: -220px; /* hidden by default */
+  }
+  .sidebar.open {
+    left: 0; /* slide in on mobile */
+  }
+
+  .admin-main.sidebar-open {
+    margin-left: 0; /* prevent shifting */
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+}

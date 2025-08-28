@@ -1,6 +1,8 @@
 package com.example.demo.dto;
 
 import com.example.demo.model.Booking;
+import com.example.demo.model.BusRoute;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,6 +14,8 @@ public class BookingDTO {
     private double totalFare;
     private LocalDateTime bookingTime;
     private List<String> seatNumbers;
+    private BusRouteDTO busRoute;
+
 
     public BookingDTO(Booking booking) {
         this.bookingId = booking.getId();
@@ -20,6 +24,24 @@ public class BookingDTO {
         this.totalFare = booking.getTotalFare();
         this.bookingTime = booking.getBookingTime();
         this.seatNumbers = booking.getSeatNumbers();
+    
+    
+
+    BusRoute route = booking.getBusRoute();
+    this.busRoute = new BusRouteDTO(
+        route.getId(),
+        route.getStartLocation(),
+        route.getEndLocation(),
+        route.getStartDateTime(),
+        route.getEndDateTime(),
+        route.getFare(),
+        route.getBusType(),
+        route.getSeatType(),
+        route.getBusName(),
+        route.isActive(),
+        route.getDroppingPoints(),
+        route.getBoardingPoints()
+    );
     }
 
     // Getters
@@ -71,4 +93,8 @@ public class BookingDTO {
     public void setSeatNumbers(List<String> seatNumbers) {
         this.seatNumbers = seatNumbers;
     }
+    public BusRouteDTO getBusRoute() {
+        return busRoute;
+    }
+
 }

@@ -1,9 +1,11 @@
 package com.example.demo.dto;
+
+import com.example.demo.model.BusRoute;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class BusRouteDTO {
-	private Long id;
+    private Long id;
     private String startLocation;
     private String endLocation;
     private LocalDateTime startDateTime;
@@ -12,13 +14,14 @@ public class BusRouteDTO {
     private String busType;
     private String seatType;
     private String busName;
+    private boolean isActive;
     private List<String> boardingPoints;
-    private List<String> droppingPoints; // ✅ New Field
+    private List<String> droppingPoints;
 
-    // ✅ Update Constructor
+  
     public BusRouteDTO(Long id, String startLocation, String endLocation, LocalDateTime startDateTime,
                        LocalDateTime endDateTime, double fare, String busType, String seatType,
-                       String busName, List<String> boardingPoints, List<String> droppingPoints) {
+                       String busName, boolean isActive, List<String> boardingPoints, List<String> droppingPoints) {
         this.id = id;
         this.startLocation = startLocation;
         this.endLocation = endLocation;
@@ -28,8 +31,26 @@ public class BusRouteDTO {
         this.busType = busType;
         this.seatType = seatType;
         this.busName = busName;
+        
         this.boardingPoints = boardingPoints;
         this.droppingPoints = droppingPoints;
+        
+    }
+
+    // Constructor that accepts BusRoute entity directly
+    public BusRouteDTO(BusRoute busRoute) {
+        this.id = busRoute.getId();
+        this.startLocation = busRoute.getStartLocation();
+        this.endLocation = busRoute.getEndLocation();
+        this.startDateTime = busRoute.getStartDateTime();
+        this.endDateTime = busRoute.getEndDateTime();
+        this.fare = busRoute.getFare();
+        this.busType = busRoute.getBusType();
+        this.seatType = busRoute.getSeatType();
+        this.busName = busRoute.getBusName();
+        this.isActive = busRoute.isActive();
+        this.boardingPoints = busRoute.getBoardingPoints();
+        this.droppingPoints = busRoute.getDroppingPoints();
     }
 
     // Getters and Setters
@@ -59,15 +80,17 @@ public class BusRouteDTO {
 
     public String getBusName() { return busName; }
     public void setBusName(String busName) { this.busName = busName; }
-
-    public List<String> getBoardingPoints() { return boardingPoints; }
-    public void setBoardingPoints(List<String> boardingPoints) { this.boardingPoints = boardingPoints; }
     
-    public List<String> getDroppingPoints() { return droppingPoints; }
-    public void setDroppingPoints(List<String> droppingPoints) { this.droppingPoints = droppingPoints; }
-    
-    
-    
+    public boolean isActive() {
+        return isActive;
     }
 
+    public void setActive(boolean active) {
+        this.isActive = active;
+    }
+    public List<String> getBoardingPoints() { return boardingPoints; }
+    public void setBoardingPoints(List<String> boardingPoints) { this.boardingPoints = boardingPoints; }
 
+    public List<String> getDroppingPoints() { return droppingPoints; }
+    public void setDroppingPoints(List<String> droppingPoints) { this.droppingPoints = droppingPoints; }
+}

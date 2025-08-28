@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.UserDTO;
 import com.example.demo.model.User;
 
 import com.example.demo.service.UserService;
@@ -38,7 +39,7 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) {
+    public ResponseEntity<?> loginUser(@RequestBody User user) {
         Optional<User> foundUser = userService.getUserByEmail(user.getEmail());
 
         if (foundUser.isPresent() &&
@@ -46,14 +47,20 @@ public class AuthController {
 
             String token = jwtUtil.generateToken(foundUser.get().getEmail(), foundUser.get().getRole());
 
+            UserDTO userDTO = new UserDTO(
+                foundUser.get().getId(),
+                foundUser.get().getName(),
+                foundUser.get().getEmail(),
+                foundUser.get().getphoneNumber()
+            );
+
             return ResponseEntity.ok(Map.of(
                 "token", token,
                 "role", foundUser.get().getRole(),
-                "email", foundUser.get().getEmail()
+                "user", userDTO
             ));
         }
 
         return ResponseEntity.status(401).body(Map.of("message", "Invalid credentials"));
     }
-
 }
