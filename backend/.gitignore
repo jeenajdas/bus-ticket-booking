@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore sensitive configs
+db-config.properties
+mail-config.properties
+jwt-config.properties
