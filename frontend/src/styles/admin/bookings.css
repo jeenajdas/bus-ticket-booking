@@ -1,0 +1,29 @@
+
+.stat-card {
+  border-radius: 15px;
+  transition: transform 0.2s ease-in-out;
+}
+.stat-card:hover {
+  transform: translateY(-6px);
+}
+.bg-gradient-primary {
+  background: linear-gradient(45deg, #007bff, #00c6ff);
+}
+.bg-gradient-success {
+  background: linear-gradient(45deg, #28a745, #6dd400);
+}
+.bg-gradient-info {
+  background: linear-gradient(45deg, #17a2b8, #00eaff);
+}
+.bg-gradient-warning {
+  background: linear-gradient(45deg, #ffc107, #ff8c00);
+}
+
+.table-modern thead {
+  background: #343a40;
+  color: white;
+}
+.table-modern tbody tr:hover {
+  background: #f5f8fa;
+  cursor: pointer;
+}

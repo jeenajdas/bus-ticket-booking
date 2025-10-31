@@ -1,0 +1,14 @@
+.ticket {
+  max-width: 700px;
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  background-color: #ffffff;
+}
+
+.ticket .card-body {
+  padding: 24px;
+}
+
+.ticket hr {
+  border-top: 1px dashed #ccc;
+}
