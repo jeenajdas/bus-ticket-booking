@@ -1,55 +1,53 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.User;
-
-
-import com.example.demo.repository.UserRepository;
+import com.example.demo.dto.UserDTO;
+import com.example.demo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body(null); // Email already exists
-        }
-
-        // Check if this is the first user
-        if (userRepository.count() == 0) {
-            user.setRole("ADMIN"); // First user becomes ADMIN
-        } else {
-            user.setRole("USER"); // All other users are regular users
-        }
-
-        // Hash the password before saving
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        return ResponseEntity.ok(userRepository.save(user));
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<User> loginUser(@RequestBody User user) {
-        Optional<User> foundUser = userRepository.findByEmail(user.getEmail());
-
-        if (foundUser.isPresent() && passwordEncoder.matches(user.getPassword(), foundUser.get().getPassword())) {
-            return ResponseEntity.ok(foundUser.get());
+    @PostMapping("/{id}/ban")
+    public ResponseEntity<UserDTO> banUser(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.banUser(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
+    }
 
-        return ResponseEntity.status(401).build();
+    @PostMapping("/{id}/unban")
+    public ResponseEntity<UserDTO> unbanUser(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.unbanUser(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteUser(@PathVariable Long id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

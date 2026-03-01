@@ -1,19 +1,23 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.model.Booking;
 import com.example.demo.model.BusRoute;
 import com.example.demo.repository.BookingRepository;
 import com.example.demo.repository.BusRouteRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AdminService {
 
     private final BusRouteRepository busRouteRepository;
-    private final BookingRepository bookingRepository; 
+    private final BookingRepository bookingRepository;
 
-    public AdminService(BusRouteRepository busRouteRepository, BookingRepository bookingRepository) {
+    public AdminService(BusRouteRepository busRouteRepository,
+            BookingRepository bookingRepository) {
         this.busRouteRepository = busRouteRepository;
         this.bookingRepository = bookingRepository;
     }
@@ -23,47 +27,68 @@ public class AdminService {
         return busRouteRepository.save(busRoute);
     }
 
-    // Update an existing bus route
-    public Optional<BusRoute> updateBusRoute(Long id, BusRoute updatedBusRoute) {
-        return busRouteRepository.findById(id).map(route -> {
-            route.setStartLocation(updatedBusRoute.getStartLocation());
-            route.setEndLocation(updatedBusRoute.getEndLocation());
-            route.setStartDateTime(updatedBusRoute.getStartDateTime());
-            route.setEndDateTime(updatedBusRoute.getEndDateTime());
-            route.setAvailableSeats(updatedBusRoute.getAvailableSeats());
-            route.setFare(updatedBusRoute.getFare());
-            route.setBusName(updatedBusRoute.getBusName()); 
-            route.setBusType(updatedBusRoute.getBusType());
-         // ✅ Update boarding and dropping points correctly
-            route.setBoardingPoints(updatedBusRoute.getBoardingPoints() != null ? updatedBusRoute.getBoardingPoints() : route.getBoardingPoints());
-            route.setDroppingPoints(updatedBusRoute.getDroppingPoints() != null ? updatedBusRoute.getDroppingPoints() : route.getDroppingPoints());
-            return busRouteRepository.save(route);
-        });
-    }
+    // Update existing bus route
+    public BusRoute updateBusRoute(Long id, BusRoute updatedBusRoute) {
 
-    // Delete a bus route
-    public boolean deleteBusRoute(Long id) {
-        if (busRouteRepository.existsById(id)) {
-            busRouteRepository.deleteById(id);
-            return true;
+        BusRoute route = busRouteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Bus route not found with id: " + id));
+
+        route.setStartLocation(updatedBusRoute.getStartLocation());
+        route.setEndLocation(updatedBusRoute.getEndLocation());
+        route.setStartDateTime(updatedBusRoute.getStartDateTime());
+        route.setEndDateTime(updatedBusRoute.getEndDateTime());
+        route.setAvailableSeats(updatedBusRoute.getAvailableSeats());
+        route.setFare(updatedBusRoute.getFare());
+        route.setBusName(updatedBusRoute.getBusName());
+        route.setBusType(updatedBusRoute.getBusType());
+        route.setSeatType(updatedBusRoute.getSeatType());
+        route.setActive(updatedBusRoute.isActive());
+        route.setFrequency(updatedBusRoute.getFrequency());
+        route.setRecurringStartDate(updatedBusRoute.getRecurringStartDate());
+        route.setRecurringEndDate(updatedBusRoute.getRecurringEndDate());
+
+        if (updatedBusRoute.getBoardingPoints() != null) {
+            route.setBoardingPoints(updatedBusRoute.getBoardingPoints());
         }
-        return false;
+
+        if (updatedBusRoute.getDroppingPoints() != null) {
+            route.setDroppingPoints(updatedBusRoute.getDroppingPoints());
+        }
+
+        return busRouteRepository.save(route);
     }
 
-    // Disable a bus route
-    public Optional<BusRoute> disableBusRoute(Long id) {
-        return busRouteRepository.findById(id).map(route -> {
-            route.setActive(false);
-            return busRouteRepository.save(route);
-        });
+    // Delete bus route
+    public void deleteBusRoute(Long id) {
+
+        if (!busRouteRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Bus route not found with id: " + id);
+        }
+
+        busRouteRepository.deleteById(id);
     }
-    
-    public Optional<BusRoute> toggleBusRouteStatus(Long id) {
-        return busRouteRepository.findById(id).map(route -> {
-            route.setActive(!route.isActive());
-            return busRouteRepository.save(route);
-        });
+
+    // Disable bus route
+    public BusRoute disableBusRoute(Long id) {
+
+        BusRoute route = busRouteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Bus route not found with id: " + id));
+
+        route.setActive(false);
+        return busRouteRepository.save(route);
     }
+
+    // Toggle bus route status
+    public BusRoute toggleBusRouteStatus(Long id) {
+
+        BusRoute route = busRouteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Bus route not found with id: " + id));
+
+        route.setActive(!route.isActive());
+        return busRouteRepository.save(route);
+    }
+
+    // Dashboard Stats
     public long getTotalBuses() {
         return busRouteRepository.count();
     }
@@ -72,17 +97,23 @@ public class AdminService {
         return bookingRepository.count();
     }
 
+    @Transactional(readOnly = true)
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAllWithDetails();
+    }
 
-    // Get total collection from all buses
+    // Reports
     public double getTotalCollection() {
         return busRouteRepository.findAll().stream()
-                .mapToDouble(route -> route.getFare() * (route.getAvailableSeats()))
+                .mapToDouble(route -> route.getFare() * route.getAvailableSeats())
                 .sum();
     }
 
-    // Get total collection for a specific bus
-    public Optional<Double> getBusCollection(Long id) {
-        return busRouteRepository.findById(id)
-                .map(route -> route.getFare() * (route.getAvailableSeats()));
+    public double getBusCollection(Long id) {
+
+        BusRoute route = busRouteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Bus route not found with id: " + id));
+
+        return route.getFare() * route.getAvailableSeats();
     }
 }

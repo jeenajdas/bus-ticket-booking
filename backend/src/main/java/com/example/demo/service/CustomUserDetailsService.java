@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> userOptional = userRepository.findByEmail(email);
-        
+
         if (userOptional.isEmpty()) {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRole()) // Spring Security needs roles in uppercase (e.g., "USER" or "ADMIN")
+                .roles(user.getRole())
                 .build();
     }
 }

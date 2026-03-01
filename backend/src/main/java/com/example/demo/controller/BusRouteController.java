@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.BusRouteDTO;
-import com.example.demo.model.BusRoute;
 import com.example.demo.repository.BusRouteRepository;
 import com.example.demo.service.BusRouteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,43 +21,51 @@ public class BusRouteController {
     @Autowired
     private BusRouteRepository busRouteRepository;
 
-    //  Get all active bus routes
+    // Get all active bus routes
     @GetMapping("/active")
     public List<BusRouteDTO> getActiveBusRoutes() {
         return busRouteService.getAllActiveRoutes();
     }
-    
- //  Get all bus routes (for Manage Buses)
+
+    // Get all bus routes (for Manage Buses)
     @GetMapping("/all")
     public List<BusRouteDTO> getAllBusRoutes() {
         return busRouteService.getAllRoutes();
     }
 
-    //  New grouped search: selected date + next 2 days
+    // selected date + next 2 days
     @GetMapping("/search")
     public ResponseEntity<Map<LocalDate, List<BusRouteDTO>>> searchGroupedRoutes(
             @RequestParam String startLocation,
             @RequestParam String endLocation,
-            @RequestParam(required = false) String departureTime
-    ) {
+            @RequestParam(required = false) String departureTime) {
         LocalDateTime depTime;
 
         try {
             depTime = (departureTime != null) ? LocalDateTime.parse(departureTime) : LocalDateTime.now();
         } catch (Exception e) {
-        	return ResponseEntity.badRequest().body(Map.of()); // Invalid date format
+            return ResponseEntity.badRequest().body(Map.of()); // Invalid date format
         }
 
         try {
-            Map<LocalDate, List<BusRouteDTO>> result = busRouteService.searchGroupedRoutes(startLocation, endLocation, depTime);
+            Map<LocalDate, List<BusRouteDTO>> result = busRouteService.searchGroupedRoutes(startLocation, endLocation,
+                    depTime);
             return ResponseEntity.ok(result);
         } catch (IllegalArgumentException ex) {
-        	return ResponseEntity.badRequest().body(Map.of()); // Past date handling
+            return ResponseEntity.badRequest().body(Map.of()); // Past date handling
         }
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<BusRouteDTO> getBusRouteById(@PathVariable Long id) {
         BusRouteDTO dto = busRouteService.getRouteById(id);
         return ResponseEntity.ok(dto);
     }
+
+    @PostMapping("/add")
+    public ResponseEntity<BusRouteDTO> addRoute(@RequestBody BusRouteDTO dto) {
+        BusRouteDTO saved = busRouteService.createRoute(dto);
+        return ResponseEntity.ok(saved);
+    }
+
 }

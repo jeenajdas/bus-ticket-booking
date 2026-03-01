@@ -1,10 +1,15 @@
 package com.example.demo.dto;
 
 import com.example.demo.model.BusRoute;
+import com.example.demo.model.Frequency;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class BusRouteDTO {
+
     private Long id;
     private String startLocation;
     private String endLocation;
@@ -15,13 +20,33 @@ public class BusRouteDTO {
     private String seatType;
     private String busName;
     private boolean isActive;
+
+    private Frequency frequency;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate recurringStartDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate recurringEndDate;
+
     private List<String> boardingPoints;
     private List<String> droppingPoints;
 
-  
-    public BusRouteDTO(Long id, String startLocation, String endLocation, LocalDateTime startDateTime,
-                       LocalDateTime endDateTime, double fare, String busType, String seatType,
-                       String busName, boolean isActive, List<String> boardingPoints, List<String> droppingPoints) {
+    public BusRouteDTO(Long id,
+            String startLocation,
+            String endLocation,
+            LocalDateTime startDateTime,
+            LocalDateTime endDateTime,
+            double fare,
+            String busType,
+            String seatType,
+            String busName,
+            boolean isActive,
+            List<String> boardingPoints,
+            List<String> droppingPoints,
+            Frequency frequency,
+            LocalDate recurringStartDate,
+            LocalDate recurringEndDate) {
+
         this.id = id;
         this.startLocation = startLocation;
         this.endLocation = endLocation;
@@ -31,13 +56,15 @@ public class BusRouteDTO {
         this.busType = busType;
         this.seatType = seatType;
         this.busName = busName;
-        
+        this.isActive = isActive;
         this.boardingPoints = boardingPoints;
         this.droppingPoints = droppingPoints;
-        
+
+        this.frequency = frequency;
+        this.recurringStartDate = recurringStartDate;
+        this.recurringEndDate = recurringEndDate;
     }
 
-    // Constructor that accepts BusRoute entity directly
     public BusRouteDTO(BusRoute busRoute) {
         this.id = busRoute.getId();
         this.startLocation = busRoute.getStartLocation();
@@ -51,36 +78,84 @@ public class BusRouteDTO {
         this.isActive = busRoute.isActive();
         this.boardingPoints = busRoute.getBoardingPoints();
         this.droppingPoints = busRoute.getDroppingPoints();
+
+        this.frequency = busRoute.getFrequency();
+        this.recurringStartDate = busRoute.getRecurringStartDate();
+        this.recurringEndDate = busRoute.getRecurringEndDate();
     }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getStartLocation() { return startLocation; }
-    public void setStartLocation(String startLocation) { this.startLocation = startLocation; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getEndLocation() { return endLocation; }
-    public void setEndLocation(String endLocation) { this.endLocation = endLocation; }
+    public String getStartLocation() {
+        return startLocation;
+    }
 
-    public LocalDateTime getStartDateTime() { return startDateTime; }
-    public void setStartDateTime(LocalDateTime startDateTime) { this.startDateTime = startDateTime; }
+    public void setStartLocation(String startLocation) {
+        this.startLocation = startLocation;
+    }
 
-    public LocalDateTime getEndDateTime() { return endDateTime; }
-    public void setEndDateTime(LocalDateTime endDateTime) { this.endDateTime = endDateTime; }
+    public String getEndLocation() {
+        return endLocation;
+    }
 
-    public double getFare() { return fare; }
-    public void setFare(double fare) { this.fare = fare; }
+    public void setEndLocation(String endLocation) {
+        this.endLocation = endLocation;
+    }
 
-    public String getBusType() { return busType; }
-    public void setBusType(String busType) { this.busType = busType; }
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
+    }
 
-    public String getSeatType() { return seatType; }
-    public void setSeatType(String seatType) { this.seatType = seatType; }
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
+    }
 
-    public String getBusName() { return busName; }
-    public void setBusName(String busName) { this.busName = busName; }
-    
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
+    }
+
+    public void setEndDateTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
+    }
+
+    public double getFare() {
+        return fare;
+    }
+
+    public void setFare(double fare) {
+        this.fare = fare;
+    }
+
+    public String getBusType() {
+        return busType;
+    }
+
+    public void setBusType(String busType) {
+        this.busType = busType;
+    }
+
+    public String getSeatType() {
+        return seatType;
+    }
+
+    public void setSeatType(String seatType) {
+        this.seatType = seatType;
+    }
+
+    public String getBusName() {
+        return busName;
+    }
+
+    public void setBusName(String busName) {
+        this.busName = busName;
+    }
+
     public boolean isActive() {
         return isActive;
     }
@@ -88,9 +163,44 @@ public class BusRouteDTO {
     public void setActive(boolean active) {
         this.isActive = active;
     }
-    public List<String> getBoardingPoints() { return boardingPoints; }
-    public void setBoardingPoints(List<String> boardingPoints) { this.boardingPoints = boardingPoints; }
 
-    public List<String> getDroppingPoints() { return droppingPoints; }
-    public void setDroppingPoints(List<String> droppingPoints) { this.droppingPoints = droppingPoints; }
+    public Frequency getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(Frequency frequency) {
+        this.frequency = frequency;
+    }
+
+    public LocalDate getRecurringStartDate() {
+        return recurringStartDate;
+    }
+
+    public void setRecurringStartDate(LocalDate recurringStartDate) {
+        this.recurringStartDate = recurringStartDate;
+    }
+
+    public LocalDate getRecurringEndDate() {
+        return recurringEndDate;
+    }
+
+    public void setRecurringEndDate(LocalDate recurringEndDate) {
+        this.recurringEndDate = recurringEndDate;
+    }
+
+    public List<String> getBoardingPoints() {
+        return boardingPoints;
+    }
+
+    public void setBoardingPoints(List<String> boardingPoints) {
+        this.boardingPoints = boardingPoints;
+    }
+
+    public List<String> getDroppingPoints() {
+        return droppingPoints;
+    }
+
+    public void setDroppingPoints(List<String> droppingPoints) {
+        this.droppingPoints = droppingPoints;
+    }
 }

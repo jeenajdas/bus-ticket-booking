@@ -10,8 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
+
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
@@ -28,18 +27,15 @@ public class JwtUtil {
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-
     public String generateToken(String email, String role) {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("role", role.startsWith("ROLE_") ? role : "ROLE_" + role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
-                .signWith(secretKey, SignatureAlgorithm.HS256) // Proper key usage
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
-
-
 
     public String extractEmail(String token) {
         return getClaims(token).getSubject();
@@ -58,8 +54,6 @@ public class JwtUtil {
         return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
-
-
     public boolean validateToken(String token) {
         try {
             Claims claims = getClaims(token);
@@ -70,7 +64,6 @@ public class JwtUtil {
             return false;
         }
     }
-
 
     private Claims getClaims(String token) {
         return Jwts.parserBuilder()
@@ -84,10 +77,10 @@ public class JwtUtil {
         return getClaims(token).getExpiration().before(new Date());
     }
 
-
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);

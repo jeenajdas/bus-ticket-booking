@@ -1,58 +1,71 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.UserDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    public User registerUser(User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("User already exists!");
-        }
-
-        // Print before encoding
-        System.out.println("Raw Password Before Encoding: " + user.getPassword());
-        
-        // Hash password before saving
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        // Print after encoding
-        System.out.println("Encoded Password: " + user.getPassword());
-
-        if (userRepository.count() == 0) {
-            user.setRole("ADMIN");
-        } else {
-            user.setRole("USER");
-        }
-
-        return userRepository.save(user);
+    // Get all users
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(u -> new UserDTO(
+                        u.getId(),
+                        u.getName(),
+                        u.getEmail(),
+                        u.getPhoneNumber(),
+                        u.getRole(),
+                        u.isBanned()))
+                .collect(Collectors.toList());
     }
 
+    // Ban user
+    public UserDTO banUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setBanned(true);
+        User saved = userRepository.save(user);
+        return toDTO(saved);
+    }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    // Unban user
+    public UserDTO unbanUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setBanned(false);
+        User saved = userRepository.save(user);
+        return toDTO(saved);
+    }
+
+    // Delete user
+    public void deleteUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User not found");
+        }
+        userRepository.deleteById(userId);
     }
 
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-    public boolean verifyPassword(String rawPassword, String encodedPassword) {
-        boolean matches = passwordEncoder.matches(rawPassword, encodedPassword);
-        System.out.println("Verifying Password: " + rawPassword + " matches? " + matches);
-        return matches;
-    }
 
+    // Helper
+    private UserDTO toDTO(User u) {
+        return new UserDTO(
+                u.getId(), u.getName(), u.getEmail(),
+                u.getPhoneNumber(), u.getRole(), u.isBanned());
+    }
 }

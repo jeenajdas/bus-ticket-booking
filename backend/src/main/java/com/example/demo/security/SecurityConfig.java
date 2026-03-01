@@ -23,27 +23,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors().and()
-            .csrf().disable()
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .cors().and()
+                .csrf().disable()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // Public endpoints
-                .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                .requestMatchers("/routes/**").permitAll()
-                .requestMatchers("/api/bus-routes/**").permitAll()
-                .requestMatchers("/user/**").permitAll()
+                        // Public endpoints
+                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                        .requestMatchers("/routes/**").permitAll()
+                        .requestMatchers("/api/bus-routes/**").permitAll()
+                        .requestMatchers("/user/**").permitAll()
+                        .requestMatchers("/api/auth/forgot-password",
+                                "/api/auth/reset-password")
+                        .permitAll()
 
-                // Bookings endpoints for authenticated users
-                .requestMatchers(HttpMethod.POST, "/api/bookings/**").authenticated()
-                
-                // Admin-only endpoints (all methods: GET, POST, PUT, DELETE)
-                .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                        // Bookings endpoints for authenticated users
+                        .requestMatchers(HttpMethod.POST, "/api/bookings/**").authenticated()
 
-                // Any other requests must be authenticated
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                        // Admin-only endpoints (all methods: GET, POST, PUT, DELETE)
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+
+                        // Any other requests must be authenticated
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -54,7 +56,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }

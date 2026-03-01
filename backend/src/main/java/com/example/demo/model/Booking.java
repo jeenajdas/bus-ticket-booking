@@ -32,6 +32,11 @@ public class Booking {
     @ElementCollection
     @CollectionTable(name = "booking_passengers", joinColumns = @JoinColumn(name = "booking_id"))
     private List<PassengerInfo> passengers;
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
+    @ManyToOne
+    @JoinColumn(name = "trip_id")
+    private Trip trip;
 
     public Booking() {
         this.bookingTime = LocalDateTime.now();
@@ -46,7 +51,6 @@ public class Booking {
         this.bookingTime = LocalDateTime.now();
     }
 
-    // Getters
     public Long getId() {
         return id;
     }
@@ -103,6 +107,7 @@ public class Booking {
     public void setSeatNumbers(List<String> seatNumbers) {
         this.seatNumbers = seatNumbers;
     }
+
     public List<PassengerInfo> getPassengers() {
         return passengers;
     }
@@ -110,4 +115,21 @@ public class Booking {
     public void setPassengers(List<PassengerInfo> passengers) {
         this.passengers = passengers;
     }
+
+    public BookingStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BookingStatus status) {
+        this.status = status;
+    }
+
+    public Trip getTrip() {
+        return trip;
+    }
+
+    public void setTrip(Trip trip) {
+        this.trip = trip;
+    }
+
 }

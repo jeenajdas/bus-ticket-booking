@@ -24,40 +24,50 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain)
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("❌ No Authorization header or incorrect format.");
+            System.out.println("⚠ No Authorization header for: " + request.getRequestURI());
             chain.doFilter(request, response);
             return;
         }
 
         String token = authHeader.substring(7);
-        System.out.println("🔍 Extracted Token: " + token);
+        // System.out.println("🔍 Extracted Token: " + token);
 
-        if (!jwtUtil.validateToken(token)) {
-            System.out.println("❌ Token validation failed!");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"error\": \"Invalid token\"}");
-            return;
+        try {
+            if (jwtUtil.validateToken(token)) {
+
+                String email = jwtUtil.extractEmail(token);
+                List<GrantedAuthority> authorities = jwtUtil.extractRole(token);
+
+                System.out.println("✅ Authenticated User: " + email);
+                System.out.println("✅ Roles: " + authorities);
+                System.out.println("➡️ Accessing: " + request.getRequestURI());
+
+                User user = new User(email, "", authorities);
+
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null,
+                        authorities);
+
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            } else {
+                System.out.println("❌ Invalid JWT for request: " + request.getRequestURI());
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ JWT Exception for request: " + request.getRequestURI());
+            e.printStackTrace();
         }
-
-        String email = jwtUtil.extractEmail(token);
-        List<GrantedAuthority> authorities = jwtUtil.extractRole(token);
-
-        System.out.println("✅ Extracted Email: " + email);
-        System.out.println("✅ Extracted Roles: " + authorities);
-
-        User user = new User(email, "", authorities);
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(user, null, authorities);
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("✅ Authentication set in SecurityContext: " + SecurityContextHolder.getContext().getAuthentication());
 
         chain.doFilter(request, response);
     }
