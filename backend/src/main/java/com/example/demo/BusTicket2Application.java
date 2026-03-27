@@ -18,7 +18,7 @@ public class BusTicket2Application {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**")// Applies CORS to all API endpoints
+                registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:5173","http://localhost:5174") // Allow React frontend
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")// Allow all headers

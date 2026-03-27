@@ -1,5 +1,4 @@
 import React from "react";
-import { Form, Row, Col } from "react-bootstrap";
 
 const BusForm = ({ formData, setFormData }) => {
   const handleChange = (e) => {
@@ -11,186 +10,215 @@ const BusForm = ({ formData, setFormData }) => {
     setFormData({ ...formData, [name]: value.split(",") });
   };
 
-  return (
-    <>
-      <Form.Group className="mb-3">
-        <Form.Label>Bus Name</Form.Label>
-        <Form.Control
-          type="text"
-          name="busName"
-          value={formData.busName}
-          onChange={handleChange}
-          required
-        />
-      </Form.Group>
+  const inputClasses =
+    "w-full bg-gray-50 border-none rounded-2xl px-6 py-4 font-bold text-slate-700 placeholder:text-slate-300 text-sm focus:ring-4 focus:ring-accent/20 outline-none transition-all";
+  const labelClasses =
+    "text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 mb-2 block";
+  const groupClasses = "space-y-2";
 
-      <Row>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>Bus Type</Form.Label>
-            <Form.Control
+  return (
+    <div className="space-y-10">
+      <div className="space-y-6">
+        <h3 className="text-[11px] font-black text-primary uppercase tracking-[0.3em] border-b border-gray-100 pb-4">
+          Basic Manifest
+        </h3>
+
+        <div className={groupClasses}>
+          <label className={labelClasses}>Asset Designation (Bus Name)</label>
+          <input
+            type="text"
+            name="busName"
+            value={formData.busName}
+            onChange={handleChange}
+            placeholder="e.g. Skyline Express Gold"
+            className={inputClasses}
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className={groupClasses}>
+            <label className={labelClasses}>Operational Class</label>
+            <input
               type="text"
               name="busType"
               value={formData.busType}
               onChange={handleChange}
+              placeholder="e.g. AC Sleeper / Scania"
+              className={inputClasses}
               required
             />
-          </Form.Group>
-        </Col>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>Seat Type</Form.Label>
-            <Form.Control
+          </div>
+          <div className={groupClasses}>
+            <label className={labelClasses}>Seating Strategy</label>
+            <input
               type="text"
               name="seatType"
               value={formData.seatType}
               onChange={handleChange}
+              placeholder="e.g. 2+1 Luxury"
+              className={inputClasses}
               required
             />
-          </Form.Group>
-        </Col>
-      </Row>
+          </div>
+        </div>
 
-      <Row>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>Fare</Form.Label>
-            <Form.Control
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className={groupClasses}>
+            <label className={labelClasses}>Tariff Rate (₹)</label>
+            <input
               type="number"
               name="fare"
               value={formData.fare}
               onChange={handleChange}
+              placeholder="2500"
+              className={inputClasses}
               required
             />
-          </Form.Group>
-        </Col>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>Available Seats</Form.Label>
-            <Form.Control
+          </div>
+          <div className={groupClasses}>
+            <label className={labelClasses}>Asset Capacity</label>
+            <input
               type="number"
               name="availableSeats"
               value={formData.availableSeats}
               onChange={handleChange}
+              placeholder="36"
+              className={inputClasses}
               required
             />
-          </Form.Group>
-        </Col>
-      </Row>
+          </div>
+        </div>
+      </div>
 
-      <Row>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>Start Location</Form.Label>
-            <Form.Control
+      <div className="space-y-6">
+        <h3 className="text-[11px] font-black text-primary uppercase tracking-[0.3em] border-b border-gray-100 pb-4">
+          Deployment Vectors
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className={groupClasses}>
+            <label className={labelClasses}>Origin Station</label>
+            <input
               type="text"
               name="startLocation"
               value={formData.startLocation}
               onChange={handleChange}
+              placeholder="Source Terminal"
+              className={inputClasses}
               required
             />
-          </Form.Group>
-        </Col>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>End Location</Form.Label>
-            <Form.Control
+          </div>
+          <div className={groupClasses}>
+            <label className={labelClasses}>Destination Terminal</label>
+            <input
               type="text"
               name="endLocation"
               value={formData.endLocation}
               onChange={handleChange}
+              placeholder="Target Destination"
+              className={inputClasses}
               required
             />
-          </Form.Group>
-        </Col>
-      </Row>
+          </div>
+        </div>
 
-      <Row>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>Start Date & Time</Form.Label>
-            <Form.Control
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className={groupClasses}>
+            <label className={labelClasses}>Scheduled Departure</label>
+            <input
               type="datetime-local"
               name="startDateTime"
               value={formData.startDateTime}
               onChange={handleChange}
+              className={`${inputClasses} uppercase text-[10px]`}
             />
-          </Form.Group>
-        </Col>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>End Date & Time</Form.Label>
-            <Form.Control
+          </div>
+          <div className={groupClasses}>
+            <label className={labelClasses}>Estimated Arrival</label>
+            <input
               type="datetime-local"
               name="endDateTime"
               value={formData.endDateTime}
               onChange={handleChange}
+              className={`${inputClasses} uppercase text-[10px]`}
             />
-          </Form.Group>
-        </Col>
-      </Row>
+          </div>
+        </div>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Boarding Points (comma separated)</Form.Label>
-        <Form.Control
-          type="text"
-          name="boardingPoints"
-          value={formData.boardingPoints.join(",")}
-          onChange={(e) => handleArrayChange("boardingPoints", e.target.value)}
-        />
-      </Form.Group>
+        <div className={groupClasses}>
+          <label className={labelClasses}>Boarding Checkpoints (CSV)</label>
+          <input
+            type="text"
+            name="boardingPoints"
+            value={formData.boardingPoints.join(",")}
+            onChange={(e) =>
+              handleArrayChange("boardingPoints", e.target.value)
+            }
+            placeholder="Station A, Terminal B, Gate 4"
+            className={inputClasses}
+          />
+        </div>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Dropping Points (comma separated)</Form.Label>
-        <Form.Control
-          type="text"
-          name="droppingPoints"
-          value={formData.droppingPoints.join(",")}
-          onChange={(e) => handleArrayChange("droppingPoints", e.target.value)}
-        />
-      </Form.Group>
+        <div className={groupClasses}>
+          <label className={labelClasses}>Drop-off Zones (CSV)</label>
+          <input
+            type="text"
+            name="droppingPoints"
+            value={formData.droppingPoints.join(",")}
+            onChange={(e) =>
+              handleArrayChange("droppingPoints", e.target.value)
+            }
+            placeholder="Interchange C, Plaza D"
+            className={inputClasses}
+          />
+        </div>
+      </div>
 
-      <Row>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>Recurring Start Date</Form.Label>
-            <Form.Control
+      <div className="space-y-6">
+        <h3 className="text-[11px] font-black text-primary uppercase tracking-[0.3em] border-b border-gray-100 pb-4">
+          Persistence Protocol
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className={groupClasses}>
+            <label className={labelClasses}>Start Cycle</label>
+            <input
               type="date"
-              name="startDate"
-              value={formData.startDate || ""}
+              name="recurringStartDate"
+              value={formData.recurringStartDate || ""}
               onChange={handleChange}
+              className={`${inputClasses} uppercase text-[10px]`}
             />
-          </Form.Group>
-        </Col>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>Recurring End Date</Form.Label>
-            <Form.Control
+          </div>
+          <div className={groupClasses}>
+            <label className={labelClasses}>Retirement Date</label>
+            <input
               type="date"
-              name="endDate"
-              value={formData.endDate || ""}
+              name="recurringEndDate"
+              value={formData.recurringEndDate || ""}
               onChange={handleChange}
+              className={`${inputClasses} uppercase text-[10px]`}
             />
-          </Form.Group>
-        </Col>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>Frequency</Form.Label>
-            <Form.Select
+          </div>
+          <div className={groupClasses}>
+            <label className={labelClasses}>Cycle Frequency</label>
+            <select
               name="frequency"
               value={formData.frequency || ""}
               onChange={handleChange}
+              className={`${inputClasses} uppercase text-[10px] appearance-none cursor-pointer`}
             >
-              <option value="">Select Frequency</option>
-              <option value="ONE_TIME">One Time</option>
-              <option value="DAILY">Daily</option>
-              <option value="WEEKENDS">Weekends</option>
-              <option value="MONDAY,FRIDAY">Mon & Fri</option>
-            </Form.Select>
-          </Form.Group>
-        </Col>
-      </Row>
-    </>
+              <option value="">Manual Deployment</option>
+              <option value="ONE_TIME">One Time Pulse</option>
+              <option value="DAILY">Daily Systematic</option>
+              <option value="WEEKENDS">Vanguard (Weekends)</option>
+              <option value="MONDAY_FRIDAY">Industrial (Mon-Fri)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

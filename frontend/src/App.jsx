@@ -1,28 +1,36 @@
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import './index.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import "./index.css";
 
-import Navbar from './components/Navbar';
-import HeroSection from './components/HeroSection';
-import WhyChoose from './components/WhyChoose';
-import Footer from './components/Footer';
-import PopularRoutes from './components/PopularRoutes';
+import AOS from "aos";
+import "aos/dist/aos.css";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 
-import Auth from './pages/Auth';
-import AboutUs from './components/AboutUs';
-import ResetPassword from "./pages/ResetPassword";
-import ContactUs from './components/ContactUs';
-import FAQ from './components/FAQ';
-import TicketsPage from './pages/TicketsPages';
-import SelectSeatsPage from './pages/SelectSeatsPage';
-import CheckoutPage from './pages/CheckoutPage';
-import BookingSuccess from './pages/BookingSuccess';
-import MyBookings from './pages/MyBookings';
-import TicketView from './pages/TicketView';
+import Navbar from "./components/Navbar";
+import HeroSection from "./components/HeroSection";
+import WhyChoose from "./components/WhyChoose";
+import Footer from "./components/Footer";
+import PopularRoutes from "./components/PopularRoutes";
+
+import Signup from "./pages/auth/Signup";
+import Login from "./pages/auth/Login";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+
+import AboutUs from "./components/AboutUs";
+import ResetPassword from "./pages/auth/ResetPassword";
+import ContactUs from "./components/ContactUs";
+import FAQ from "./components/FAQ";
+import TicketsPage from "./pages/TicketsPages";
+import SelectSeatsPage from "./pages/SelectSeatsPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import BookingSuccess from "./pages/BookingSuccess";
+import MyBookings from "./pages/MyBookings";
+import TicketView from "./pages/TicketView";
 import Dashboard from "./pages/admin/Dashboard";
 import ManageBuses from "./pages/admin/ManageBuses";
 
@@ -47,8 +55,10 @@ const App = () => {
       <ConditionalNavbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/signup" element={<Auth />} />
-        <Route path="/signin" element={<Auth />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
         <Route path="/about" element={<AboutUs />} />
         <Route path="/tickets" element={<TicketsPage />} />
         <Route path="/contact" element={<ContactUs />} />
@@ -59,7 +69,7 @@ const App = () => {
         <Route path="/ticket/:bookingId" element={<TicketView />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* ✅ Admin dashboard route */}
+        {/*  Admin dashboard route */}
         {role === "ADMIN" && (
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
@@ -75,16 +85,27 @@ const App = () => {
   );
 };
 
-// Hide Navbar on admin routes
+// Hide Navbar on certain routes (admin section and authentication pages)
 const ConditionalNavbar = () => {
   const location = useLocation();
-  if (location.pathname.startsWith("/admin")) {
-    return null; // ✅ Don't render Navbar in admin routes
+  const hiddenPaths = [
+    "/login",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
+  ];
+
+  // hide navbar for admin and auth-related routes
+  if (
+    location.pathname.startsWith("/admin") ||
+    hiddenPaths.includes(location.pathname)
+  ) {
+    return null;
   }
   return <Navbar />;
 };
 
-// Home component with existing sections
+// Home component
 const Home = () => {
   return (
     <div>

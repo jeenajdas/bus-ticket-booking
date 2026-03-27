@@ -1,15 +1,24 @@
-// src/components/admin/StatCard.jsx
 import React from "react";
+import { FaArrowUp } from "react-icons/fa";
 
-const StatCard = ({ title, value, icon, color }) => {
+const StatCard = ({
+  title,
+  value,
+  icon,
+  colorClass = "sc-blue",
+  trend = "Live Data",
+}) => {
   return (
-    <div className="stat-card" style={{ borderLeft: `4px solid ${color}` }}>
-      <div className="stat-icon" style={{ color }}>
-        {icon}
+    <div className={`stat-card ${colorClass}`}>
+      <div className="stat-top">
+        <p className="stat-label">{title}</p>
+        <div className="stat-icon">{icon}</div>
       </div>
-      <div className="stat-info">
-        <h5>{title}</h5>
-        <h3>{value}</h3>
+      <div className="stat-value">{value}</div>
+      <div className="stat-footer">
+        <span className="stat-badge up">
+          <FaArrowUp /> {trend}
+        </span>
       </div>
     </div>
   );

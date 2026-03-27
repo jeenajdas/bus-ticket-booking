@@ -1,24 +1,65 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createBooking, getUserBookings } from './bookingAPI';
+import axiosInstance from '../../services/axiosInstance';
+import { getUserBookings } from './bookingAPI';
 
-export const bookSeats = createAsyncThunk(
-  'userBooking/bookSeats',
+/* ================================
+   1️⃣ CREATE BOOKING (Pending)
+================================ */
+export const createBooking = createAsyncThunk(
+  'userBooking/createBooking',
   async ({ bookingData, token }, thunkAPI) => {
     try {
-      return await createBooking(bookingData, token);
+      const response = await axiosInstance.post(
+        '/bookings/create',
+        bookingData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response?.data?.message || 'Booking failed');
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Create booking failed'
+      );
     }
   }
 );
 
+/* ================================
+   2️⃣ CONFIRM BOOKING
+================================ */
+export const confirmBooking = createAsyncThunk(
+  'userBooking/confirmBooking',
+  async ({ bookingId, token }, thunkAPI) => {
+    try {
+      const response = await axiosInstance.put(
+        `/bookings/confirm/${bookingId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Confirm booking failed'
+      );
+    }
+  }
+);
+
+/* ================================
+   3️⃣ FETCH MY BOOKINGS (existing)
+================================ */
 export const fetchUserBookings = createAsyncThunk(
   'userBooking/fetchUserBookings',
   async (token, thunkAPI) => {
     try {
       return await getUserBookings(token);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to load bookings');
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Failed to load bookings'
+      );
     }
   }
 );
@@ -29,6 +70,7 @@ const userBookingSlice = createSlice({
     status: 'idle',
     error: null,
     successData: null,
+
     myBookings: [],
     myBookingsStatus: 'idle',
     myBookingsError: null,
@@ -42,20 +84,35 @@ const userBookingSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Booking
-      .addCase(bookSeats.pending, (state) => {
+
+      /* CREATE BOOKING */
+      .addCase(createBooking.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
-      .addCase(bookSeats.fulfilled, (state, action) => {
+      .addCase(createBooking.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.successData = action.payload;
       })
-      .addCase(bookSeats.rejected, (state, action) => {
+      .addCase(createBooking.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       })
-      // My Bookings
+
+      /* CONFIRM BOOKING */
+      .addCase(confirmBooking.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(confirmBooking.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.successData = action.payload;
+      })
+      .addCase(confirmBooking.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      /* FETCH MY BOOKINGS */
       .addCase(fetchUserBookings.pending, (state) => {
         state.myBookingsStatus = 'loading';
         state.myBookingsError = null;

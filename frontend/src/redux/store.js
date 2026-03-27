@@ -6,6 +6,8 @@ import bookingReducer from '../features/bookings/bookingSlice'
 import reportReducer from '../features/reports/reportSlice'
 import userBusReducer from '../features/buses/userBusSlice'
 import userBookingReducer from '../features/bookings/userBookingSlice'
+import userReducer        from '../features/users/userSlice'; 
+import profileReducer      from '../features/profile/profileSlice';
 
 const store = configureStore({
   reducer: {
@@ -15,6 +17,8 @@ const store = configureStore({
     reports: reportReducer,
     userBuses: userBusReducer,
     userBooking: userBookingReducer,
+    users: userReducer, 
+    profile:   profileReducer, 
   },
 });
 
