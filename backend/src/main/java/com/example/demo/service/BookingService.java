@@ -8,7 +8,7 @@ import com.example.demo.model.*;
 import com.example.demo.repository.BookingRepository;
 import com.example.demo.repository.BusRouteRepository;
 import com.example.demo.repository.UserRepository;
-
+import com.example.demo.model.BookingStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

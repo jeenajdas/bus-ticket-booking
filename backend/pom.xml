@@ -115,6 +115,11 @@
     <artifactId>javase</artifactId>
     <version>3.5.1</version>
 </dependency>
+		<dependency>
+			<groupId>com.razorpay</groupId>
+			<artifactId>razorpay-java</artifactId>
+			<version>1.4.5</version>
+		</dependency>
 <!-- iText Kernel (core library) -->
 <!-- iText PDF Kernel -->
 
