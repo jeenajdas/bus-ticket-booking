@@ -36,3 +36,4 @@ build/
 db-config.properties
 mail-config.properties
 jwt-config.properties
+razorpay-config.properties
