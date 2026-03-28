@@ -33,7 +33,7 @@ public class PaymentController {
         this.userService = userService;
     }
 
-    // Step 1: Frontend calls this to get Razorpay order ID
+    //Frontend calls this to get Razorpay order ID
     @PostMapping("/create-order")
     public ResponseEntity<?> createOrder(@RequestBody Map<String, Integer> body) {
         try {
@@ -46,7 +46,7 @@ public class PaymentController {
         }
     }
 
-    // Step 2: Frontend calls this after payment success to verify + confirm booking
+    //after payment success to verify and confirm booking
     @PostMapping("/verify")
     public ResponseEntity<?> verifyAndBook(
             @RequestBody Map<String, Object> body,

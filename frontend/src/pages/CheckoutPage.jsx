@@ -47,7 +47,7 @@ const CheckoutPage = () => {
     setIsLoading(true);
 
     try {
-      // Step 1: Create Razorpay order from backend
+      //Create Razorpay order from backend
       const orderRes = await axiosInstance.post('/payment/create-order',
         { amount: finalAmount },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -55,7 +55,7 @@ const CheckoutPage = () => {
 
       const { orderId, amount, currency, keyId } = orderRes.data;
 
-      // Step 2: Open Razorpay payment popup
+      //Open Razorpay payment popup
       const options = {
         key: keyId,
         amount: amount * 100,
@@ -65,7 +65,7 @@ const CheckoutPage = () => {
         order_id: orderId,
 
         handler: async function (response) {
-          // Step 3: Payment done — verify and create booking
+          // Payment done — verify and create booking
           try {
             const verifyRes = await axiosInstance.post('/payment/verify', {
               razorpayOrderId: response.razorpay_order_id,
